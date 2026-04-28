@@ -147,6 +147,37 @@
   .invoice-totals-row.grand .price { color: #C9A66B; }
   .invoice-footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #DDD; font-size: 10px; color: #888; line-height: 1.7; }
 
+  /* CONTACT FORM MODAL */
+  .contact-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+  .contact-modal.show { display: flex; }
+  .contact-form-wrap { background: var(--black-card); border: 1px solid var(--gold); border-radius: 4px; max-width: 540px; width: 100%; padding: 36px; box-shadow: 0 30px 80px rgba(0,0,0,0.8); max-height: 90vh; overflow-y: auto; }
+  .contact-eyebrow { font-size: 10px; letter-spacing: 4px; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; font-weight: 700; }
+  .contact-title { font-size: 22px; font-weight: 700; color: var(--white); margin-bottom: 10px; letter-spacing: 1px; }
+  .contact-desc { font-size: 13px; color: var(--silver); margin-bottom: 24px; line-height: 1.55; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 10px; letter-spacing: 2px; color: var(--gold); text-transform: uppercase; font-weight: 700; margin-bottom: 6px; }
+  .field label .req { color: #FF6B6B; margin-left: 2px; }
+  .field input, .field textarea {
+    width: 100%; background: var(--black-soft); border: 1px solid var(--border-light); border-radius: 2px;
+    padding: 10px 14px; color: var(--white); font-size: 14px; font-family: inherit; transition: border-color 0.15s;
+  }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--gold); }
+  .field input::placeholder, .field textarea::placeholder { color: var(--gray); }
+  .field textarea { resize: vertical; min-height: 60px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field-error { color: #FF6B6B; font-size: 11px; margin-top: 4px; display: none; }
+  .field.invalid input, .field.invalid textarea { border-color: #FF6B6B; }
+  .field.invalid .field-error { display: block; }
+  .form-actions { display: flex; gap: 10px; margin-top: 26px; }
+  .form-actions .btn { flex: 1; }
+  .skip-link { display: block; text-align: center; margin-top: 14px; font-size: 11px; color: var(--gray); cursor: pointer; text-decoration: none; letter-spacing: 1px; text-transform: uppercase; }
+  .skip-link:hover { color: var(--silver); }
+
+  /* SUCCESS NOTICE */
+  .success-notice { background: rgba(201,166,107,0.08); border: 1px solid var(--gold); border-radius: 2px; padding: 14px 16px; margin-bottom: 18px; font-size: 12px; color: var(--silver); line-height: 1.6; display: none; }
+  .success-notice.show { display: block; }
+  .success-notice strong { color: var(--gold); display: block; margin-bottom: 4px; letter-spacing: 1px; font-size: 11px; text-transform: uppercase; }
+
   @media print {
     @page { size: A4; margin: 12mm; }
     body { background: white !important; }
@@ -227,13 +258,58 @@
   </div>
 </div>
 
+<div class="contact-modal" id="contactModal">
+  <div class="contact-form-wrap">
+    <div class="contact-eyebrow">Шаг 1 из 2 · Контактные данные</div>
+    <div class="contact-title">Оформление коммерческого предложения</div>
+    <div class="contact-desc">Заполните данные клиента — они будут включены в счёт и отправлены менеджеру дилерского центра ООО «Гринвич» для дальнейшей работы.</div>
+
+    <form id="contactForm" novalidate>
+      <div class="field-row">
+        <div class="field" data-field="name">
+          <label>Имя клиента <span class="req">*</span></label>
+          <input type="text" id="fName" placeholder="Иван Иванов" autocomplete="name">
+          <div class="field-error">Укажите имя клиента</div>
+        </div>
+        <div class="field" data-field="phone">
+          <label>Телефон <span class="req">*</span></label>
+          <input type="tel" id="fPhone" placeholder="+7 (___) ___-__-__" autocomplete="tel">
+          <div class="field-error">Укажите телефон для связи</div>
+        </div>
+      </div>
+
+      <div class="field" data-field="email">
+        <label>E-mail клиента</label>
+        <input type="email" id="fEmail" placeholder="client@example.com" autocomplete="email">
+        <div class="field-error">Некорректный формат e-mail</div>
+      </div>
+
+      <div class="field" data-field="manager">
+        <label>Имя менеджера</label>
+        <input type="text" id="fManager" placeholder="Кто работал с клиентом">
+      </div>
+
+      <div class="field">
+        <label>Комментарий</label>
+        <textarea id="fComment" placeholder="Дополнительная информация о клиенте, желаемые сроки, особые пожелания..." rows="3"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn btn-ghost" id="btnContactCancel">Отмена</button>
+        <button type="submit" class="btn btn-primary" id="btnContactSubmit">Перейти к счёту</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="modal">
   <div class="invoice">
     <div class="invoice-actions">
-      <span class="invoice-actions-title">Предложение · Готово к печати</span>
+      <span class="invoice-actions-title">Шаг 2 из 2 · Готово к отправке</span>
       <div class="invoice-actions-btns">
         <button class="btn btn-ghost" id="btnClose">Закрыть</button>
-        <button class="btn btn-primary" id="btnPrint">Печать / PDF</button>
+        <button class="btn btn-ghost" id="btnPrint">Печать / PDF</button>
+        <button class="btn btn-primary" id="btnSendEmail">Отправить менеджеру</button>
       </div>
     </div>
     <div class="invoice-content" id="invoiceContent"></div>
@@ -685,6 +761,8 @@ let currentModel = '07';
 let currentBody = 'S';
 let currentTab = null;
 const selected = new Map();
+const MANAGER_EMAIL = 'ABotenev@lcirkutsk.ru';
+let lastInvoiceData = null; // saves invoice text + meta for email body
 
 const fmt = n => n.toLocaleString('ru-RU').replace(/,/g, ' ') + ' ₽';
 
@@ -916,6 +994,13 @@ function buildInvoice() {
   const now = new Date();
   const docNum = `КП-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${Math.floor(Math.random()*900+100)}`;
   const dateStr = now.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric' });
+  const carStr = `${data.name}${data.hasBodyVariants ? ' · ' + currentBody + ' (исполнение кузова)' : ''}`;
+
+  // Save invoice data for email composition
+  lastInvoiceData = {
+    docNum, date: dateStr, car: carStr,
+    total, vat, noVat, byCategory
+  };
 
   let rowsHtml = '';
   let n = 0;
@@ -944,7 +1029,20 @@ function buildInvoice() {
     rowsHtml = `<tr><td colspan="4" style="padding:60px;text-align:center;color:#999;font-style:italic;">Выберите хотя бы одну позицию для формирования счёта</td></tr>`;
   }
 
+  const clientBlock = clientContact ? `
+    <div style="background:#FAF7F0;border-left:3px solid #C9A66B;padding:14px 18px;margin-bottom:24px;border-radius:2px;">
+      <div style="font-size:10px;letter-spacing:3px;color:#999;text-transform:uppercase;font-weight:700;margin-bottom:8px;">Данные клиента</div>
+      <div style="font-size:14px;color:#1A1A1A;font-weight:600;margin-bottom:4px;">${clientContact.name}</div>
+      <div style="font-size:12px;color:#555;line-height:1.7;">
+        Тел.: ${clientContact.phone}
+        ${clientContact.email ? '<br>E-mail: ' + clientContact.email : ''}
+        ${clientContact.manager ? '<br>Менеджер: ' + clientContact.manager : ''}
+        ${clientContact.comment ? '<br><br><i>Комментарий:</i> ' + clientContact.comment : ''}
+      </div>
+    </div>` : '';
+
   const html = `
+    <div id="successNotice" class="success-notice"></div>
     <div class="invoice-header">
       <div>
         <div class="invoice-brand">W&nbsp;&nbsp;E&nbsp;&nbsp;Y</div>
@@ -968,13 +1066,14 @@ function buildInvoice() {
       </div>
       <div class="invoice-meta-block">
         <strong>Автомобиль</strong>
-        <div class="v">${data.name}${data.hasBodyVariants ? ' · ' + currentBody + ' (исполнение кузова)' : ''}</div>
+        <div class="v">${carStr}</div>
       </div>
       <div class="invoice-meta-block" style="text-align:right;">
         <strong>Позиций в предложении</strong>
         <div class="v">${items.length}</div>
       </div>
     </div>
+    ${clientBlock}
     <div class="invoice-title">Спецификация аксессуаров и услуг</div>
     <div class="invoice-subtitle">Цены указаны с установкой в дилерском центре</div>
     <table class="invoice-table">
@@ -1013,10 +1112,176 @@ document.getElementById('btnClear').addEventListener('click', () => {
   }
 });
 document.getElementById('btnInvoice').addEventListener('click', () => {
+  if (selected.size === 0) {
+    alert('Выберите хотя бы одну позицию для формирования счёта');
+    return;
+  }
+  openContactForm();
+});
+
+/* ============================================================
+   CONTACT FORM — Step 1
+   ============================================================ */
+let clientContact = null; // saved after form submission
+
+function openContactForm() {
+  // Reset validation state
+  document.querySelectorAll('.field').forEach(f => f.classList.remove('invalid'));
+  document.getElementById('contactModal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('fName').focus(), 100);
+}
+
+function closeContactForm() {
+  document.getElementById('contactModal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function validateContactForm() {
+  let valid = true;
+  const name = document.getElementById('fName').value.trim();
+  const phone = document.getElementById('fPhone').value.trim();
+  const email = document.getElementById('fEmail').value.trim();
+
+  // Name required
+  const nameField = document.querySelector('.field[data-field="name"]');
+  if (!name) { nameField.classList.add('invalid'); valid = false; }
+  else nameField.classList.remove('invalid');
+
+  // Phone required, basic check (at least 10 digits)
+  const phoneField = document.querySelector('.field[data-field="phone"]');
+  const phoneDigits = phone.replace(/\D/g, '');
+  if (phoneDigits.length < 10) { phoneField.classList.add('invalid'); valid = false; }
+  else phoneField.classList.remove('invalid');
+
+  // Email optional, but if provided must be valid
+  const emailField = document.querySelector('.field[data-field="email"]');
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    emailField.classList.add('invalid'); valid = false;
+  } else emailField.classList.remove('invalid');
+
+  return valid;
+}
+
+function submitContactForm(e) {
+  e.preventDefault();
+  if (!validateContactForm()) return;
+
+  clientContact = {
+    name: document.getElementById('fName').value.trim(),
+    phone: document.getElementById('fPhone').value.trim(),
+    email: document.getElementById('fEmail').value.trim(),
+    manager: document.getElementById('fManager').value.trim(),
+    comment: document.getElementById('fComment').value.trim(),
+  };
+
+  closeContactForm();
   buildInvoice();
   document.getElementById('modal').classList.add('show');
   document.body.style.overflow = 'hidden';
+}
+
+document.getElementById('contactForm').addEventListener('submit', submitContactForm);
+document.getElementById('btnContactCancel').addEventListener('click', closeContactForm);
+document.getElementById('contactModal').addEventListener('click', (e) => {
+  if (e.target.id === 'contactModal') closeContactForm();
 });
+
+/* ============================================================
+   SEND BY E-MAIL — Step 2
+   ============================================================ */
+function buildEmailBody() {
+  if (!clientContact || !lastInvoiceData) return '';
+  const c = clientContact;
+  const d = lastInvoiceData;
+
+  let body = '';
+  body += `КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ\n`;
+  body += `${'='.repeat(50)}\n\n`;
+  body += `Документ: ${d.docNum}\n`;
+  body += `Дата: ${d.date}\n`;
+  body += `Автомобиль: ${d.car}\n\n`;
+
+  body += `КЛИЕНТ\n${'-'.repeat(50)}\n`;
+  body += `Имя: ${c.name}\n`;
+  body += `Телефон: ${c.phone}\n`;
+  if (c.email) body += `E-mail: ${c.email}\n`;
+  if (c.manager) body += `Менеджер: ${c.manager}\n`;
+  if (c.comment) body += `\nКомментарий:\n${c.comment}\n`;
+  body += `\n`;
+
+  body += `СПЕЦИФИКАЦИЯ\n${'-'.repeat(50)}\n`;
+  let n = 0;
+  d.byCategory.forEach((items, catName) => {
+    if (!items.length) return;
+    body += `\n[ ${catName.toUpperCase()} ]\n`;
+    items.forEach(it => {
+      n++;
+      const bodyTag = it.body ? ` (${it.body})` : '';
+      const groupTag = it._group ? ` — ${it._group}${it.sublabel ? ', ' + it.sublabel : ''}` : '';
+      body += `${n}. ${it.name}${bodyTag}${groupTag}\n`;
+      body += `   Артикул: ${it.sku}\n`;
+      if (it.sub) body += `   ${it.sub}\n`;
+      body += `   Стоимость: ${fmt(it.price)}\n`;
+    });
+  });
+
+  body += `\n${'='.repeat(50)}\n`;
+  body += `Стоимость без НДС:  ${fmt(Math.round(d.noVat))}\n`;
+  body += `НДС 7%:             ${fmt(Math.round(d.vat))}\n`;
+  body += `ИТОГО:              ${fmt(d.total)}\n`;
+  body += `${'='.repeat(50)}\n\n`;
+  body += `Цены указаны с установкой в дилерском центре.\n`;
+  body += `Срок действия предложения — 14 календарных дней.\n\n`;
+  body += `ООО «Гринвич» · Дилерский центр WEY\n`;
+  body += `г. Иркутск, ул. Ширямова, 32 · 8 (3952) 500-700\n`;
+
+  return body;
+}
+
+function sendByEmail() {
+  if (!clientContact || !lastInvoiceData) {
+    alert('Сначала заполните данные клиента');
+    return;
+  }
+  const subject = `КП ${lastInvoiceData.docNum} · ${clientContact.name} · ${lastInvoiceData.car}`;
+  const body = buildEmailBody();
+
+  // mailto: protocol — opens user's default mail client with everything pre-filled
+  const mailto = `mailto:${MANAGER_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+  // mailto has length limits in some clients (~2000 chars). If too long, copy to clipboard as fallback.
+  if (mailto.length > 1900) {
+    // Long body — try clipboard fallback
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(`Кому: ${MANAGER_EMAIL}\nТема: ${subject}\n\n${body}`).then(() => {
+        showSuccessNotice('clipboard');
+      }).catch(() => {
+        window.location.href = mailto;
+      });
+    } else {
+      window.location.href = mailto;
+    }
+  } else {
+    window.location.href = mailto;
+    showSuccessNotice('mailto');
+  }
+}
+
+function showSuccessNotice(method) {
+  const notice = document.getElementById('successNotice');
+  if (!notice) return;
+  if (method === 'mailto') {
+    notice.innerHTML = `<strong>✓ Открывается почтовая программа</strong>Письмо с данными клиента и спецификацией готовится в вашем почтовом клиенте. Проверьте содержимое и нажмите «Отправить».`;
+  } else if (method === 'clipboard') {
+    notice.innerHTML = `<strong>✓ Текст скопирован в буфер обмена</strong>Письмо слишком длинное для автоматического создания. Откройте почту и вставьте (Ctrl+V) текст в новое письмо на адрес ${MANAGER_EMAIL}`;
+  }
+  notice.classList.add('show');
+}
+
+document.getElementById('btnSendEmail').addEventListener('click', sendByEmail);
+
+
 document.getElementById('btnClose').addEventListener('click', () => {
   document.getElementById('modal').classList.remove('show');
   document.body.style.overflow = '';
